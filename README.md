@@ -1,13 +1,13 @@
 # DropWizard PlayDead
 
-## Introduction [![Build Status](https://travis-ci.org/commercehub-oss/play-dead.svg?branch=master)](https://travis-ci.org/commercehub-oss/play-dead)
+## Introduction [![Build Status](https://travis-ci.org/commercehub-oss/dropwizard-playdead.svg?branch=master)](https://travis-ci.org/commercehub-oss/dropwizard-playdead)
 The PlayDead DropWizard bundle provides a way to programmatically quiesce nodes in a cluster by faking their deaths.
 PlayDead adds an alternate endpoint to `/ping` for a load-balancer's health check. The existing `/ping` endpoint always
 responds with `200 "pong"` if the node is alive. PlayDead exposes a new admin endpoint, `/ready` by default, that either returns
 `200 "ready"` or `503 "standby"`. The state of the the standby mode can be changed by sending a `PUT` to start playing dead, or a `DELETE` to stop. 
 The state is determined by the existence of a state file defined in the config. 
 
-## Maven (etc.) [ ![Download](https://api.bintray.com/packages/commercehub-oss/main/play-dead/images/download.png) ](https://bintray.com/commercehub-oss/main/play-dead/_latestVersion)
+## Maven (etc.) [ ![Download](https://api.bintray.com/packages/commercehub-oss/main/dropwizard-playdead/images/download.png) ](https://bintray.com/commercehub-oss/main/dropwizard-playdead/_latestVersion)
 
 Maven
 
@@ -25,7 +25,7 @@ Maven
 
    <dependency>
        <groupId>com.commercehub.dropwizard</groupId>
-       <artifactId>play-dead</artifactId>
+       <artifactId>dropwizard-playdead</artifactId>
        <version>0.0.1</version>
    </dependency>
 ```
@@ -41,7 +41,7 @@ Gradle
     ...
     dependencies {
         ...
-        compile 'com.commercehub.dropwizard:play-dead:0.0.1'
+        compile 'com.commercehub.dropwizard:dropwizard-playdead:0.0.1'
         ...
     }
 
