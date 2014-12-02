@@ -26,7 +26,7 @@ Maven
    <dependency>
        <groupId>com.commercehub.dropwizard</groupId>
        <artifactId>dropwizard-playdead</artifactId>
-       <version>0.0.1</version>
+       <version>0.0.2</version>
    </dependency>
 ```
 Gradle
@@ -71,13 +71,8 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
     public void initialize(Bootstrap<HelloWorldConfiguration> bootstrap) {
         bootstrap.addBundle(new PlayDeadBundle<HelloWorldConfiguration>() {
             @Override
-            public String getStateFilePath(HelloWorldConfiguration helloWorldConfiguration) {
-                return helloWorldConfiguration.getPlaydead().getstateFilePath();
-            }
-
-            @Override
-            public String getContextPath(HelloWorldConfiguration helloWorldConfiguration) {
-                return helloWorldConfiguration.getPlaydead().getContextPath();
+            public PlayDeadConfiguration getPlayDeadConfiguration(HelloWorldConfiguration helloWorldConfiguration) {
+                return helloWorldConfiguration.getPlaydead();
             }
         });
     }
@@ -192,21 +187,22 @@ ready
 ```
 
 ## Programmatic Usage
-The PlayDead bundle exposes the `PlayDead` class which uses the singleton pattern and has the following public methods:
+The PlayDead bundle exposes the `PlayDead` class which has the following public methods:
 ```java
-    PlayDead getInstance()
+    PlayDead(PlayDeadConfiguration config)
 
-    instance.setLockFilePath(String path)
+    setLockFilePath(String path)
 
-    boolean instance.isPlayingDead()
+    boolean isPlayingDead()
 
-    instance.startPlayingDead() 
+    void startPlayingDead()
 
-    instance.stopPlayingDead()
+    void stopPlayingDead()
 ```
 Sample usage:
 ```java
-    if (PlayDead.getInstance().isPlayingDead()) {
+    PlayDead playDead = new PlayDead(playDeadConfiguration)
+    if (playDead.isPlayingDead()) {
       //stop participating in Quartz cluster
     }
 ```

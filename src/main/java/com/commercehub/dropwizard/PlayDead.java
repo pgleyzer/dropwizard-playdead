@@ -4,22 +4,15 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-/**
- * Created by awilson on 11/18/14.
- */
 public class PlayDead {
 
     private File stateFile;
 
-    private static final PlayDead INSTANCE = new PlayDead();
-
-    private PlayDead() { }
-
-    public static PlayDead getInstance() {
-        return INSTANCE;
+    public PlayDead(PlayDeadConfiguration playDeadConfiguration) {
+        setStateFilePath(playDeadConfiguration.getStateFilePath());
     }
 
-    public void setLockFilePath(String path) {
+    public void setStateFilePath(String path) {
         stateFile = new File(path);
     }
 

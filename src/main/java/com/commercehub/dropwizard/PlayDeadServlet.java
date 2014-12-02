@@ -5,10 +5,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-/**
- * Created by awilson on 11/18/14.
- */
-
 public class PlayDeadServlet extends HttpServlet {
 
     private static final String CONTENT_TYPE = "text/plain";
@@ -17,8 +13,8 @@ public class PlayDeadServlet extends HttpServlet {
 
     PlayDead playDead;
 
-    public PlayDeadServlet() {
-        playDead = PlayDead.getInstance();
+    public PlayDeadServlet(PlayDead playDead) {
+        this.playDead = playDead;
     }
 
     @Override
