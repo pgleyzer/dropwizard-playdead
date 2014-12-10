@@ -7,6 +7,13 @@ responds with `200 "pong"` if the node is alive. PlayDead exposes a new endpoint
 `200 "ready"` or `503 "standby"`. The state of the the standby mode can be changed by sending a `PUT` to start playing dead, or a `DELETE` to stop. 
 The state is determined by the existence of a state file defined in the config. 
 
+### But... why?
+Rolling deployments, access, and automation. Our goal is to be able to able to deploy our software in production in a clustered environment without downtime. Currently, this is possible with access to our load-balancers---we simply disable the node that we are upgrading to stop its flow of traffic.  This method works, but is not perfect:
+- Our deployment team needs access to the load-balancer.
+- Given access to the load-balancer, automating the quiescing of a node on the load-balancer poses an additional set of challenges.
+- It stop requests from being sent to the server, but does not stop the server from participating in the cluster in other ways (read: clustered Quartz).
+The goal of this bundle is the trick the load-balancer into thinking the node is dead. This moves the control of node removal out of the networking realm and into that of the deployment teams. It also simplifies the process, making automation trivial.
+
 ## Maven (etc.) [ ![Download](https://api.bintray.com/packages/commercehub-oss/main/dropwizard-playdead/images/download.png) ](https://bintray.com/commercehub-oss/main/dropwizard-playdead/_latestVersion)
 
 Maven
@@ -238,7 +245,7 @@ Sample usage:
     }
 ```
 
-# Security
+## Security
 With the `accessKey` configuration parameter aside, security is beyond this scope of this bundle. That is, a security solution should be implemented at the DropWizard application level. It may behoove one to look into SSL and basic authentication, or two-way SSL.
 
 # License
