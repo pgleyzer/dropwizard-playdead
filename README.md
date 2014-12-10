@@ -92,31 +92,31 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
 
 ```
 
-##### stateFilePath
+#### stateFilePath
 
   required, no default
 
   The path to the file that determines if the DropWizard instance is in `standby` state. If they file exists, the server is in `standby` state. Conversely, if it does not exists, the server is in `ready` state.
 
-##### contextPath
+#### contextPath
 
   default is `/ready`
 
   The path segment of the URL where the PlayDead will respond. The default is `/ready`.
 
-##### environment
+#### environment
   
   default is `application`
 
   The environment in which the PlayDead Servlet is added. DropWizard can be configured to listen on two interfaces, one for your application and one for administrative needs such as healthchecks. There are two possible values, `application` and `admin` with the former being the default.
 
-##### accessKey
+#### accessKey
   
   not required, no default
 
   Provides an extremely thin layer of security for changing the state of PlayDead via HTTP. When using `PUT` and `DELETE`, the access should be provided as the query portion of the URL. E.g. `http://example.com/ready?someNotSoSecret`
 
-##### showMessageOnError
+#### showMessageOnError
  
   default is `false`
 
