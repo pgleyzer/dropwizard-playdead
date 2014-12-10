@@ -11,9 +11,17 @@ public abstract class PlayDeadBundle<T extends Configuration> implements Configu
         PlayDeadConfiguration playDeadConfiguration = getPlayDeadConfiguration(config);
         PlayDead playDead = new PlayDead(playDeadConfiguration);
 
-        environment.admin()
-                .addServlet(playDeadConfiguration.getContextPath(), new PlayDeadServlet(playDead))
-                .addMapping(playDeadConfiguration.getContextPath());
+        if (playDeadConfiguration.getEnvironment().equals(PlayDeadConfiguration.ADMIN_ENVIRONMENT)) {
+            environment.admin()
+                    .addServlet(playDeadConfiguration.getContextPath(), new PlayDeadServlet(playDead))
+                    .addMapping(playDeadConfiguration.getContextPath());
+        } else if (playDeadConfiguration.getEnvironment().equals(PlayDeadConfiguration.APPLICATION_ENVIRONMENT)) {
+            environment.servlets()
+                    .addServlet(playDeadConfiguration.getContextPath(), new PlayDeadServlet(playDead))
+                    .addMapping(playDeadConfiguration.getContextPath());
+        } else {
+            throw new Exception("PlayDeadConfiguration Environment invalid: "+playDeadConfiguration.getEnvironment());
+        }
     }
 
     @Override

@@ -26,10 +26,10 @@ Maven
    <dependency>
        <groupId>com.commercehub.dropwizard</groupId>
        <artifactId>dropwizard-playdead</artifactId>
-       <version>0.0.2</version>
+       <version>0.0.3</version>
    </dependency>
 ```
-Gradle
+Gradle      
 
 ```groovy
 
@@ -41,7 +41,7 @@ Gradle
     ...
     dependencies {
         ...
-        compile 'com.commercehub.dropwizard:dropwizard-playdead:0.0.1'
+        compile 'com.commercehub.dropwizard:dropwizard-playdead:0.0.3'
         ...
     }
 
@@ -80,15 +80,38 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
 }
 ```
 ## Configuration
-The only required config is the stateFilePath which determine the location of the state. Context defaults to `/ready`
 ```yaml
   ...
   playdead:
     stateFilePath: /tmp/example-playdead
     contextPath: /ready
+    environment: admin
+    accessKey: someNotSoSecretKey
+    showMessageOnError: false
   ...
 
 ```
+
+* stateFilePath: required, no default
+
+  The path to the file that determines if the DropWizard instance is in `standby` state. If they file exists, the server is in `standby` state. Conversely, if it does not exists, the server is in `ready` state.
+
+* contextPath: default is `/ready`
+
+  The path segment of the URL where the PlayDead will respond. The default is `/ready`.
+
+* environment: default is `application`
+
+  The environment in which the PlayDead Servlet is added. DropWizard can be configured to listen on two interfaces, one for your application and one for administrative needs such as healthchecks. There are two possible values, `application` and `admin` with the former being the default.
+
+* accessKey: not required, no default
+
+  Provides an extremely thin layer of security for changing the state of PlayDead via HTTP. When using `PUT` and `DELETE`, the access should be provided as the query portion of the URL. E.g. `http://example.com/ready?someNotSoSecret`
+
+* showMessageOnError: default is `false`
+
+  If an exception occurs while manipulating the state file, the stacktrace will be sent in the response body. Should only be used for debugging. The default is `false` and, naturally, the other possible value is `true`.
+
 
 ## Remote Usage of the Service
 
@@ -106,7 +129,7 @@ ready
 
 Make the node play dead:
 ```
-$ http PUT some-remote-host:8081/ready
+$ http PUT some-remote-host:8081/ready?someNotSoSecretKey
 HTTP/1.1 200 OK
 Cache-Control: must-revalidate,no-cache,no-store
 Content-Length: 0
@@ -128,7 +151,7 @@ standby
 
 Bring the node back to life:
 ```
-$ http DELETE some-remote-host:8081/ready
+$ http DELETE some-remote-host:8081/ready?someNotSoSecretKey
 HTTP/1.1 200 OK
 Cache-Control: must-revalidate,no-cache,no-store
 Content-Length: 0
@@ -191,8 +214,6 @@ The PlayDead bundle exposes the `PlayDead` class which has the following public 
 ```java
     PlayDead(PlayDeadConfiguration config)
 
-    setLockFilePath(String path)
-
     boolean isPlayingDead()
 
     void startPlayingDead()
@@ -206,6 +227,9 @@ Sample usage:
       //stop participating in Quartz cluster
     }
 ```
+
+# Security
+With the `accessKey` configuration parameter aside, security is beyond this scope of this bundle. That is, a security solution should be implemented at the DropWizard application level. It may behoove one to look into SSL and basic authentication, or two-way SSL.
 
 # License
 This library is available under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0).

@@ -4,6 +4,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintStream;
 
 public class PlayDeadServlet extends HttpServlet {
 
@@ -25,13 +26,13 @@ public class PlayDeadServlet extends HttpServlet {
         try {
             if (playDead.isPlayingDead()) {
                 response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-                    response.getOutputStream().print(STANDBY_RESPONSE_TEXT);
+                response.getOutputStream().print(STANDBY_RESPONSE_TEXT);
             } else {
                 response.setStatus(HttpServletResponse.SC_OK);
                 response.getOutputStream().print(OK_RESPONSE_TEXT);
             }
         } catch (IOException e) {
-            response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            handleExceptionResponse(response, e);
         }
     }
 
@@ -39,17 +40,45 @@ public class PlayDeadServlet extends HttpServlet {
     protected void doPut(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType(CONTENT_TYPE);
         response.setHeader("Cache-Control", "must-revalidate,no-cache,no-store");
-
-        playDead.startPlayingDead();
-        response.setStatus(playDead.isPlayingDead() ? HttpServletResponse.SC_OK : HttpServletResponse.SC_UNAUTHORIZED );
+        if (hasAccess(request)) {
+            try {
+                playDead.startPlayingDead();
+                response.setStatus(HttpServletResponse.SC_OK);
+            } catch (IOException e) {
+                handleExceptionResponse(response, e);
+            }
+        } else {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
     }
 
     @Override
     protected void doDelete(HttpServletRequest request, HttpServletResponse response) {
         response.setContentType(CONTENT_TYPE);
         response.setHeader("Cache-Control", "must-revalidate,no-cache,no-store");
+        if (hasAccess(request)) {
+            try {
+                playDead.stopPlayingDead();
+                response.setStatus(HttpServletResponse.SC_OK);
+            } catch (IOException e) {
+                handleExceptionResponse(response, e);
+            }
+        } else {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        }
+    }
 
-        playDead.stopPlayingDead();
-        response.setStatus(playDead.isPlayingDead() ?  HttpServletResponse.SC_UNAUTHORIZED : HttpServletResponse.SC_OK );
+    private void handleExceptionResponse(HttpServletResponse response, Exception exception) {
+        response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        if(playDead.getConfig().showMessageOnError()) {
+            try {
+                exception.printStackTrace(new PrintStream(response.getOutputStream()));
+            } catch (IOException ignore) { }
+        }
+    }
+
+    private boolean hasAccess(HttpServletRequest request) {
+        return playDead.getConfig().getAccessKey() == null ||
+                (request.getQueryString() != null && request.getQueryString().equals(playDead.getConfig().getAccessKey()));
     }
 }

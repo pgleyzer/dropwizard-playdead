@@ -1,35 +1,36 @@
 package com.commercehub.dropwizard;
 
-import java.io.File;
-import java.io.FileOutputStream;
+
 import java.io.IOException;
+import java.nio.file.Files;
 
 public class PlayDead {
 
-    private File stateFile;
+    private PlayDeadConfiguration config;
 
     public PlayDead(PlayDeadConfiguration playDeadConfiguration) {
-        setStateFilePath(playDeadConfiguration.getStateFilePath());
-    }
-
-    public void setStateFilePath(String path) {
-        stateFile = new File(path);
+        this.config = playDeadConfiguration;
     }
 
     public boolean isPlayingDead() {
-        return stateFile != null && stateFile.exists();
+        return config.getStateFilePath() != null && Files.exists(config.getStateFilePath());
     }
 
-    public void startPlayingDead() {
-        if(!stateFile.exists()) {
-            try {
-                new FileOutputStream(stateFile).close();
-            } catch (IOException ignore) { }
+    public void startPlayingDead() throws IOException {
+        if(!Files.exists(config.getStateFilePath())) {
+            Files.createFile(config.getStateFilePath());
         }
-        stateFile.setLastModified(System.currentTimeMillis());
     }
 
-    public void stopPlayingDead() {
-        stateFile.delete();
+    public void stopPlayingDead() throws IOException {
+        Files.deleteIfExists(config.getStateFilePath());
+    }
+
+    public PlayDeadConfiguration getConfig() {
+        return config;
+    }
+
+    public void setConfig(PlayDeadConfiguration config) {
+        this.config = config;
     }
 }
