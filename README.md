@@ -3,7 +3,7 @@
 ## Introduction [![Build Status](https://travis-ci.org/commercehub-oss/dropwizard-playdead.svg?branch=master)](https://travis-ci.org/commercehub-oss/dropwizard-playdead)
 The PlayDead DropWizard bundle provides a way to programmatically quiesce nodes in a cluster by faking their deaths.
 PlayDead adds an alternate endpoint to `/ping` for a load-balancer's health check. The existing `/ping` endpoint always
-responds with `200 "pong"` if the node is alive. PlayDead exposes a new admin endpoint, `/ready` by default, that either returns
+responds with `200 "pong"` if the node is alive. PlayDead exposes a new endpoint, `/ready` by default, that either returns
 `200 "ready"` or `503 "standby"`. The state of the the standby mode can be changed by sending a `PUT` to start playing dead, or a `DELETE` to stop. 
 The state is determined by the existence of a state file defined in the config. 
 
@@ -85,30 +85,40 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
   playdead:
     stateFilePath: /tmp/example-playdead
     contextPath: /ready
-    environment: admin
+    environment: application
     accessKey: someNotSoSecretKey
     showMessageOnError: false
   ...
 
 ```
 
-* stateFilePath: required, no default
+##### stateFilePath
+
+  required, no default
 
   The path to the file that determines if the DropWizard instance is in `standby` state. If they file exists, the server is in `standby` state. Conversely, if it does not exists, the server is in `ready` state.
 
-* contextPath: default is `/ready`
+##### contextPath
+
+  default is `/ready`
 
   The path segment of the URL where the PlayDead will respond. The default is `/ready`.
 
-* environment: default is `application`
+##### environment
+  
+  default is `application`
 
   The environment in which the PlayDead Servlet is added. DropWizard can be configured to listen on two interfaces, one for your application and one for administrative needs such as healthchecks. There are two possible values, `application` and `admin` with the former being the default.
 
-* accessKey: not required, no default
+##### accessKey
+  
+  not required, no default
 
   Provides an extremely thin layer of security for changing the state of PlayDead via HTTP. When using `PUT` and `DELETE`, the access should be provided as the query portion of the URL. E.g. `http://example.com/ready?someNotSoSecret`
 
-* showMessageOnError: default is `false`
+##### showMessageOnError
+ 
+  default is `false`
 
   If an exception occurs while manipulating the state file, the stacktrace will be sent in the response body. Should only be used for debugging. The default is `false` and, naturally, the other possible value is `true`.
 
@@ -117,7 +127,7 @@ public class HelloWorldApplication extends Application<HelloWorldConfiguration> 
 
 Once DropWizard is running, you can query the ready state:
 ```
-$ http some-remote-host:8081/ready
+$ http some-remote-host:8080/ready
 HTTP/1.1 200 OK
 Cache-Control: must-revalidate,no-cache,no-store
 Content-Length: 5
@@ -129,7 +139,7 @@ ready
 
 Make the node play dead:
 ```
-$ http PUT some-remote-host:8081/ready?someNotSoSecretKey
+$ http PUT some-remote-host:8080/ready?someNotSoSecretKey
 HTTP/1.1 200 OK
 Cache-Control: must-revalidate,no-cache,no-store
 Content-Length: 0
@@ -139,7 +149,7 @@ Date: Wed, 19 Nov 2014 14:52:50 GMT
 
 Veryfy it is playing dead:
 ```
-$ http some-remote-host:8081/ready
+$ http some-remote-host:8080/ready
 HTTP/1.1 503 Service Unavailable
 Cache-Control: must-revalidate,no-cache,no-store
 Content-Length: 7
@@ -151,7 +161,7 @@ standby
 
 Bring the node back to life:
 ```
-$ http DELETE some-remote-host:8081/ready?someNotSoSecretKey
+$ http DELETE some-remote-host:8080/ready?someNotSoSecretKey
 HTTP/1.1 200 OK
 Cache-Control: must-revalidate,no-cache,no-store
 Content-Length: 0
@@ -161,7 +171,7 @@ Date: Wed, 19 Nov 2014 14:54:51 GMT
 
 Verify it is alive:
 ```
-$ http some-remote-host:8081/ready
+$ http some-remote-host:8080/ready
 HTTP/1.1 200 OK
 Cache-Control: must-revalidate,no-cache,no-store
 Content-Length: 5
@@ -174,7 +184,7 @@ ready
 ## Host Based Usage of the Service
 
 ```
-$ http localhost:8081/ready
+$ http localhost:8080/ready
 HTTP/1.1 200 OK
 Cache-Control: must-revalidate,no-cache,no-store
 Content-Length: 5
@@ -188,7 +198,7 @@ dev.yml:  stateFilePath: /tmp/example-playdead
 
 $ touch /tmp/example-playdead
 
-$ http localhost:8081/ready
+$ http localhost:8080/ready
 HTTP/1.1 503 Service Unavailable
 Cache-Control: must-revalidate,no-cache,no-store
 Content-Length: 7
@@ -199,7 +209,7 @@ standby
 
 $ rm /tmp/example-playdead
 
-$ http localhost:8081/ready
+$ http localhost:8080/ready
 HTTP/1.1 200 OK
 Cache-Control: must-revalidate,no-cache,no-store
 Content-Length: 5
