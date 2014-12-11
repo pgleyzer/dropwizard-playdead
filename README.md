@@ -279,7 +279,7 @@ After the release artifacts have been uploaded to Bintray, they must be publishe
 Bintray's [Publishing](https://bintray.com/docs/uploads/uploads_publishing.html) documentation for instructions.
 
 After publishing the release on Bintray, it's also nice to create a GitHub release. To do so:
-*   Visit the project's [releases](https://github.com/commercehub-oss/dropwizard-mongo/releases) page
+*   Visit the project's [releases](https://github.com/commercehub-oss/dropwizard-playdead/releases) page
 *   Click the "Draft a new release" button
 *   Select the tag that was created by the Gradle `release` task
 *   Enter a title; typically, this should match the tag (e.g. "1.2.0")
