@@ -18,6 +18,7 @@ repositories {
 
 dependencies {
     compile "io.dropwizard:dropwizard-core:0.7.1"
+    compile "com.codahale.metrics:metrics-healthchecks:3.0.2"
     testCompile "org.spockframework:spock-core:0.7-groovy-2.0"
 }
 

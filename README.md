@@ -247,6 +247,18 @@ Sample usage:
     }
 ```
 
+## HealthCheck Usage
+In case you want to have Quiesce as part of your healthcheck, a new `PlayDeadCheck` can be used to register in your application `run()` method
+
+```java
+	
+	...
+	environment.healthChecks().register("playdead check", new PlayDeadCheck(configuration.playDead));
+	...
+```
+
+It will fail the healthcheck during quiesce.
+
 ## Security
 With the `accessKey` configuration parameter aside, security is beyond this scope of this bundle. That is, a security solution should be implemented at the DropWizard application level. It may behoove one to look into SSL and basic authentication, or two-way SSL.
 
